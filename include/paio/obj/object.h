@@ -3,8 +3,15 @@
 
 namespace paio {
 
+
+  class ObjectBase {
+  public:
+    virtual ~ObjectBase() {}
+  public:
+  };
+
   template<typename T>
-    class Object {
+    class Object : public ObjectBase {
     private:
       T* _privateData;
 
