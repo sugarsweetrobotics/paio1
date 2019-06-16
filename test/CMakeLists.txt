@@ -11,9 +11,17 @@ target_link_libraries(http_test  paio_http Catch2::Catch2)
 add_test(NAME http_test COMMAND $<TARGET_FILE:http_test>) 
 endif (BUILD_HTTP_TEST)
 
+if (BUILD_OBJ_TEST)
 add_executable(object_test object_test.cpp)
 target_link_libraries(object_test Catch2::Catch2)
 add_test(NAME object_test COMMAND $<TARGET_FILE:object_test>) 
+endif (BUILD_OBJ_TEST)
+
+if (BUILD_JSON_TEST)
+add_executable(json_test json_test.cpp)
+target_link_libraries(json_test paio_json Catch2::Catch2)
+add_test(NAME json_test COMMAND $<TARGET_FILE:json_test>) 
+endif (BUILD_JSON_TEST)
 
 if (BUILD_BROKER_TEST)
 add_executable(broker_test broker_test.cpp)

@@ -4,7 +4,7 @@
 namespace paio {
 
   template<typename T>
-    struct Object {
+    class Object {
     private:
       T* _privateData;
 
