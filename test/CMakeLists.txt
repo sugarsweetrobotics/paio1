@@ -17,6 +17,12 @@ target_link_libraries(object_test Catch2::Catch2)
 add_test(NAME object_test COMMAND $<TARGET_FILE:object_test>) 
 endif (BUILD_OBJ_TEST)
 
+if (BUILD_OBJDIC_TEST)
+add_executable(object_dictionary_test object_dictionary_test.cpp)
+target_link_libraries(object_dictionary_test paio_object Catch2::Catch2)
+add_test(NAME object_dictionary_test COMMAND $<TARGET_FILE:object_dictionary_test>) 
+endif (BUILD_OBJDIC_TEST)
+
 if (BUILD_JSON_TEST)
 add_executable(json_test json_test.cpp)
 target_link_libraries(json_test paio_json Catch2::Catch2)

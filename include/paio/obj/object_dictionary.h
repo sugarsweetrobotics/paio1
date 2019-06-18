@@ -6,25 +6,32 @@
 #include <paio/obj/object.h>
 
 namespace paio {
-
   
   struct ObjectDictionary {
-    std::map<std::string, paio::ObjectBase> map;
+  public:
+    std::map<std::string, std::shared_ptr<void>> map;
   };
 
-
-  using ObjectDictionary_ptr = paio::ptr<ObjectDictionary>;
+  using ObjectDictionary_ptr = std::shared_ptr<ObjectDictionary>;
 
   ObjectDictionary_ptr object_dictionary();
 
-  inline paio::ObjectBase get(ObjectDictionary_ptr dic, const std::string& key) {
+  template<typename T>
+  paio::Object<T> get(ObjectDictionary_ptr dic, const std::string& key) {
     if (dic->map.count(key) == 0) {
-      return paio::ObjectBase();
+      return paio::Object<T>();
     }
-    return dic->map[key];
+    return Object<T>((std::static_pointer_cast<T>(dic->map[key])));
+  }
+  
+  template<typename T>
+  void put(ObjectDictionary_ptr dic, const std::string& key, paio::Object<T>&& doc) {
+    dic->map[key] = std::static_pointer_cast<void>(doc._get());
   }
 
-  inline void put(ObjectDictionary_ptr dic, const std::string& key, paio::ObjectBase doc) {
-    dic->map[key] = doc;
+  template<typename T>
+  void put(ObjectDictionary_ptr dic, const std::string& key, paio::Object<T>& doc) {
+    dic->map[key] = std::static_pointer_cast<void>(doc._get());
   }
+
 };
