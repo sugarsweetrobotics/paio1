@@ -4,7 +4,7 @@
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 
-using namespace paio::datatype;
+using namespace paio;
 
 struct JSONDocumentImpl : public json::Document {
   rapidjson::Document doc;

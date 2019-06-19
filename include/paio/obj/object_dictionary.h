@@ -30,8 +30,8 @@ namespace paio {
   }
 
   template<typename T>
-  void put(ObjectDictionary_ptr dic, const std::string& key, paio::Object<T>& doc) {
-    dic->map[key] = std::static_pointer_cast<void>(doc._get());
+  void put(ObjectDictionary_ptr dic, const std::string& key, const paio::Object<T>& doc) {
+    dic->map[key] = std::static_pointer_cast<void>(doc.get());
   }
 
 };

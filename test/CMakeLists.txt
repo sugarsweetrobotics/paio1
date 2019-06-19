@@ -23,6 +23,12 @@ target_link_libraries(object_dictionary_test paio_object Catch2::Catch2)
 add_test(NAME object_dictionary_test COMMAND $<TARGET_FILE:object_dictionary_test>) 
 endif (BUILD_OBJDIC_TEST)
 
+if (BUILD_OBJSERV_TEST)
+add_executable(object_server_test object_server_test.cpp)
+target_link_libraries(object_server_test paio_object paio_json paio_http Catch2::Catch2)
+add_test(NAME object_server_test COMMAND $<TARGET_FILE:object_server_test>) 
+endif (BUILD_OBJSERV_TEST)
+
 if (BUILD_JSON_TEST)
 add_executable(json_test json_test.cpp)
 target_link_libraries(json_test paio_json Catch2::Catch2)

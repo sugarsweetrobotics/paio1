@@ -9,8 +9,6 @@
 
 namespace paio {
   
-  namespace datatype { 
-    
     namespace json {
 
       class ParseException : public std::exception {};
@@ -182,8 +180,5 @@ namespace paio {
 	return v;
       }
     };
-    
-
-  };
 
 };

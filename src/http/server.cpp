@@ -23,6 +23,11 @@ struct ServerImpl : public http::Server {
 						    server_thread(nullptr) {
   }
 
+  ServerImpl(const std::string& addr, const int32_t p) : http::Server(addr, p),
+						    svr(new httplib::Server()), 
+						    server_thread(nullptr) {
+  }
+
   ServerImpl(ServerImpl&& s) : http::Server(std::forward<http::Server>(s)), 
 			       svr(s.svr), 
 			       server_thread(std::move(s.server_thread)) {
@@ -46,6 +51,12 @@ http::Server_ptr http::server(std::string&& address, const int32_t port) {
   auto s = std::shared_ptr<http::Server>(new ServerImpl(std::forward<std::string>(address), port));
   return s;
 }
+
+http::Server_ptr http::server(const std::string& address, const int32_t port) {
+  auto s = std::shared_ptr<http::Server>(new ServerImpl(address, port));
+  return s;
+}
+
 
 
 std::function<http::Server_ptr(http::Server_ptr&&)> http::serve(const std::string& endpoint, const std::string& method, Callback cb) {
