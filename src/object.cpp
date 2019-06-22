@@ -3,7 +3,7 @@
 #include <paio/object_server.h>
 
 
-static paio::ObjectBase nullobj;
+//static paio::ObjectBase nullobj;
 
 paio::ObjectDictionary_ptr paio::object_dictionary() {
   return std::make_shared<paio::ObjectDictionary>();

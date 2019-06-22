@@ -17,6 +17,9 @@ public:
     ObjectServer() : od(paio::object_dictionary()) {}
 
 public:
+
+    friend ObjectServer startUnlock(ObjectServer&& server, const std::string& address, const int32_t port);
+
     template <typename T>
     friend ObjectServer registerObject(ObjectServer &&os, const std::string &topic, const Object<T> &obj);
 };
@@ -32,6 +35,7 @@ ObjectServer registerObject(ObjectServer &&os, const std::string &topic, const O
 
 inline ObjectServer startUnlock(ObjectServer&& server, const std::string& address, const int32_t port) {
     server.srv = paio::http::server(address, port);
+    paio::forEach(server.od, +[](const std::string& topic, paio::ObjectContainer& container) {});
     return server;
 }
 

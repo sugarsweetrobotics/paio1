@@ -37,7 +37,8 @@ SCENARIO("Object Server", "[object]")
         auto os = paio::object_server();
 
         auto obj = paio::object<TM>({"header", "body"});
-        REQUIRE(paio::get<TM>(obj)->h == "header");
+        //REQUIRE(paio::get<TM>(obj)->h == "header");
+        REQUIRE(obj >>= +[](const TM& tm) -> bool { return (tm.h == "header");});
         REQUIRE(paio::get<TM>(obj)->b == "body");
 
         os = paio::registerObject(std::move(os), "topic1", obj);
