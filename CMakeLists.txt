@@ -7,11 +7,11 @@ project(paio LANGUAGES CXX VERSION 0.1.0)
 
 
 option(BUILD_TEST "Build Test Option" ON)
-option(BUILD_JSON_TEST "Build JSON Option" ON)
-option(BUILD_OBJDIC_TEST "Build ObjectDictionaryTest Option" ON)
-option(BUILD_OBJSERV_TEST "Build ObjectServerTest Option" ON)
+option(BUILD_JSON_TEST "Build JSON Option" OFF)
+option(BUILD_OBJDIC_TEST "Build ObjectDictionaryTest Option" OFF)
+option(BUILD_OBJSERV_TEST "Build ObjectServerTest Option" OFF)
 option(BUILD_OBJ_TEST "Build Object Test Option" ON)
-option(BUILD_HTTP_TEST "Build HTTP Option" ON)
+option(BUILD_HTTP_TEST "Build HTTP Option" OFF)
 
 add_subdirectory(src)
 # add_subdirectory(example)
