@@ -33,16 +33,15 @@ public:
 
   ObjectBase &operator=(const ObjectBase &obj)
   {
-
+    /*
     if (!_privateData)
     {
       _privateData = nullptr;
     }
     else
-    {
-
-      *_privateData = *(obj._privateData);
-    }
+    {*/
+      _privateData = (obj._privateData);
+    //}
     return *this;
   }
 

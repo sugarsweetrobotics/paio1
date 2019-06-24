@@ -115,7 +115,7 @@ std::function<http::Server_ptr(http::Server_ptr&&)> http::listen(double timeout)
       }
     }
     
-    std::cout << "okay" << std::endl;
+    //std::cout << "okay" << std::endl;
     server->port = port;
     return server;
   };

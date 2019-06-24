@@ -13,7 +13,7 @@ struct JSONDocumentImpl : public json::Document {
     doc.SetObject();
   }
 
-  JSONDocumentImpl(std::string& s) {
+  JSONDocumentImpl(const std::string& s) {
     doc.Parse(s.c_str());
     if (doc.HasParseError()) {
       throw new json::ParseException();
@@ -56,7 +56,7 @@ inline std::shared_ptr<JSONObjectImpl> _IMPL(const json::Container& x) {return s
 inline rapidjson::Document& _DOC(const json::Document_ptr& d) { return _IMPL(d)->doc; }
 inline const rapidjson::Value& _VALUE(const json::Container& c) { return _IMPL(c)->value; }
 
-json::Container json::parse(std::string&& s) {
+json::Container json::parse(const std::string& s) {
   return Container(json::Document_ptr(new JSONDocumentImpl(s)));
 }
 

@@ -25,7 +25,7 @@ endif (BUILD_OBJDIC_TEST)
 
 if (BUILD_OBJSERV_TEST)
 add_executable(object_server_test object_server_test.cpp)
-target_link_libraries(object_server_test paio_object paio_json paio_http Catch2::Catch2)
+target_link_libraries(object_server_test paio_object paio_object_server paio_json paio_http Catch2::Catch2)
 add_test(NAME object_server_test COMMAND $<TARGET_FILE:object_server_test>) 
 endif (BUILD_OBJSERV_TEST)
 

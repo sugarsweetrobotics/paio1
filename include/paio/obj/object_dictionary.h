@@ -18,6 +18,10 @@ namespace paio {
     ObjectContainer(std::shared_ptr<T> data): ObjectBase<std::shared_ptr<void>>(std::static_pointer_cast<void>(data)){
       typeName = typeid(T).name();
     }
+
+    template<typename T>
+    ObjectContainer(const T& data): ObjectContainer(std::make_shared<T>(data)) {
+    }
 public:
 
     template<typename T, typename W>
@@ -52,6 +56,10 @@ public:
     return paio::Object<T>(std::static_pointer_cast<T>(paio::get<std::shared_ptr<void>>(dic->map[key])));
   }
   
+  inline void put(ObjectDictionary_ptr dic, const std::string& key, paio::ObjectContainer&& oc) {
+    dic->map[key] = oc;
+  }
+
   template<typename T>
   void put(ObjectDictionary_ptr dic, const std::string& key, paio::Object<T>&& doc) {
     dic->map[key] = ObjectContainer(doc._get());

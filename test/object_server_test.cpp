@@ -24,10 +24,10 @@ auto jsonize = +[](const TM2 &tm) {
 };
 
 auto containize = +[](const paio::json::Container& c) {
-    return paio::Object<TM2>({json::string(c, "h"), json::string(c, "b")});
+    return TM2({json::string(c, "h"), json::string(c, "b")});
 };
 
-SCENARIO("Object Server", "[object]")
+SCENARIO("Jsonizer", "[object]")
 {
     GIVEN("Object JSONizer")
     {
@@ -37,32 +37,51 @@ SCENARIO("Object Server", "[object]")
         REQUIRE(json::string(json::get(jobj, "h")) == "header");
         REQUIRE(json::string(json::get(jobj, "b")) == "body");
     }
+};
 
+SCENARIO("Object Server", "[object]")
+{
     GIVEN("Object Server insert without error")
     {
         const int port = 9559;
-        auto os = paio::object_server();
+        auto os1 = paio::object_server();
         auto obj = paio::object<TM2>({"header", "body"});
         REQUIRE((obj >>= +[](const TM2 &tm) { return (tm.h == "header"); }));
         REQUIRE((obj >>= +[](const TM2 &tm) { return (tm.b == "body"); }));
 
-        os = paio::registerObject(std::move(os), "/topic1", obj, jsonize);
-        os = paio::startUnlock(std::move(os), "localhost", port);
+        
+        auto os2 = paio::registerObject(std::move(os1), "/topic1", obj, jsonize, containize);
+        auto os = paio::startUnlock(std::move(os2), "localhost", port);
+        
         THEN("Can access to server")
         {
             auto r = http::get("localhost", port, "/topic1");
+            
             REQUIRE(r.status == 200);
             REQUIRE(r.body == std::string("{\"b\":\"body\",\"h\":\"header\",\"__className__\":\"") + typeid(TM2).name() + "\"}");
         }
 
+        
         THEN("Can put data to server")
         {
             auto obj2 = paio::object<TM2>({"header2", "body2"});
-            os = paio::put(std::move(os), "/topic1", obj2);
+            auto os4 = paio::put(std::move(os), "/topic1", obj2);
+
+            auto r = http::get("localhost", port, "/topic1");
+            REQUIRE(r.status == 200);
+            REQUIRE(r.body == std::string("{\"b\":\"body2\",\"h\":\"header2\",\"__className__\":\"") + typeid(TM2).name() + "\"}");        
+        } 
+
+        
+        THEN("Can write data through server")
+        {
+            http::put("localhost", port, "/topic1", std::string("{\"b\":\"body2\",\"h\":\"header2\",\"__className__\":\"") + typeid(TM2).name() + "\"}", "application/json");
 
             auto r = http::get("localhost", port, "/topic1");
             REQUIRE(r.status == 200);
             REQUIRE(r.body == std::string("{\"b\":\"body2\",\"h\":\"header2\",\"__className__\":\"") + typeid(TM2).name() + "\"}");        
         }
+        
     }
+
 }

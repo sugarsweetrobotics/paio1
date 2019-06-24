@@ -32,6 +32,7 @@ namespace paio {
     Response(): version("1.0"), status(0) {}
     Response(int32_t s): version("1.0"), status(s), body("") {}
     Response(int32_t s,  std::string&& body) : version("1.0"), status(s), body(body) {}
+    Response(int32_t s,  const std::string& body) : version("1.0"), status(s), body(body) {}
     Response(Response&& r) : version(r.version), status(r.status), body(r.body) {}
 	
     };

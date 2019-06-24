@@ -70,7 +70,7 @@ struct Container
       }
 };
 
-Container parse(std::string &&s);
+Container parse(const std::string &s);
 //      Container get(const Document_ptr& j, std::string&& label);
 std::vector<std::string> keys(Container &doc);
 

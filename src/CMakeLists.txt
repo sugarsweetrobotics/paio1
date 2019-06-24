@@ -13,6 +13,10 @@ set(json_srcs ${json_src} PARENT_SCOPE)
 set(object_src object.cpp)
 set(object_srcs ${object_src} PARENT_SCOPE)
 
+
+set(object_server_src object_server.cpp)
+set(object_server_srcs ${object_server_src} PARENT_SCOPE)
+
 #set(broker_src broker.cpp object_broker.cpp)
 #set(broker_srcs ${broker_src} PARENT_SCOPE)
 
@@ -39,6 +43,9 @@ target_link_libraries(paio_json Threads::Threads)
 
 add_library(paio_object ${object_src})
 target_link_libraries(paio_object Threads::Threads)
+
+add_library(paio_object_server ${object_server_src})
+target_link_libraries(paio_object_server Threads::Threads)
 
 #add_library(paio_broker ${broker_src})
 #target_link_libraries(paio_broker Threads::Threads ${paio_http_libs})

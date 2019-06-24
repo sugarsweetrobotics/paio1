@@ -8,7 +8,3 @@
 paio::ObjectDictionary_ptr paio::object_dictionary() {
   return std::make_shared<paio::ObjectDictionary>();
 }
-
-paio::ObjectServer paio::object_server() {
-  return ObjectServer();
-}
