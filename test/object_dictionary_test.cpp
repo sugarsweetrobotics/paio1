@@ -19,10 +19,12 @@ SCENARIO( "Object", "[object]" ) {
 
   GIVEN("Object Dictionary insert without error") {
     auto od = paio::object_dictionary();
-    auto obj = paio::object<TM>({"header", "body"});
+    const auto obj = paio::object<TM>({"header", "body"});
 
-    REQUIRE( paio::get<TM>(obj)->h == "header" );
-    REQUIRE( paio::get<TM>(obj)->b == "body" );
+    REQUIRE(( obj >>= +[](const TM& tm) { return tm.h == "header"; }));
+    REQUIRE(( obj >>= +[](const TM& tm) { return tm.b == "body"; }));
+    //REQUIRE( paio::get<TM>(obj)->h == "header" );
+    //REQUIRE( paio::get<TM>(obj)->b == "body" );
 
     THEN("Object Dictionary insertion") {
       paio::put(od, "/topic01", obj);
@@ -31,8 +33,11 @@ SCENARIO( "Object", "[object]" ) {
     THEN("Object Dictionary load") {
       paio::put(od, "/topic01", obj);
       auto obj2 = paio::get<TM>(od, "/topic01");
-      
-      REQUIRE(obj2 == obj);
+      REQUIRE(!paio::isNull(obj));
+      REQUIRE(( obj >>= +[](const TM& tm) { return tm.h == "header"; }));
+      REQUIRE(!paio::isNull(obj2));
+      REQUIRE(( obj2 >>= +[](const TM& tm) { return tm.h == "header"; }));
+      //REQUIRE(obj2 == obj);
     }
 
   }

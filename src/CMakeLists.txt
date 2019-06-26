@@ -1,7 +1,7 @@
 set(http_src http/client.cpp http/server.cpp)
 set(http_srcs ${http_src} PARENT_SCOPE)
 
-set(json_src json.cpp)
+set(json_src obj/json.cpp)
 set(json_srcs ${json_src} PARENT_SCOPE)
 
 #set(ec_src ec/periodic_execution_context.cpp)
@@ -10,11 +10,11 @@ set(json_srcs ${json_src} PARENT_SCOPE)
 #set(process_src process/process.cpp)
 #set(process_srcs ${process_src} PARENT_SCOPE)
 
-set(object_src object.cpp)
+set(object_src obj/object.cpp)
 set(object_srcs ${object_src} PARENT_SCOPE)
 
 
-set(object_server_src object_server.cpp)
+set(object_server_src obj/object_server.cpp)
 set(object_server_srcs ${object_server_src} PARENT_SCOPE)
 
 #set(broker_src broker.cpp object_broker.cpp)

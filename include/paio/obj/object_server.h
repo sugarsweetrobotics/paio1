@@ -7,26 +7,11 @@
 #include <paio/obj/json.h>
 #include <paio/http/server.h>
 
+#include <paio/obj/object_jsonizer.h>
+#include <paio/obj/object_containizer.h>
+
 namespace paio
 {
-using Jsonizer = std::function<paio::json::Container(const paio::ObjectContainer &)>;
-
-template <typename T>
-Jsonizer jsonizer(paio::json::Container (*f)(const T &))
-{
-    return [f](const paio::ObjectContainer &oc) {
-        return f(paio::get<T>(oc));
-    };
-}
-
-using Containizer = std::function<paio::ObjectContainer(const paio::json::Container &)>;
-template <typename T>
-Containizer containizer(T(*f)(const paio::json::Container &))
-{
-    return [f](const paio::json::Container &jc) {
-        return ObjectContainer(f(jc));
-    };
-}
 
 class ObjectServer
 {
@@ -69,7 +54,6 @@ public:
 
     template <typename T>
     friend ObjectServer registerObject(ObjectServer &&os, const std::string &topic, const Object<T> &obj, paio::json::Container (*f)(const T &), T (*c)(const paio::json::Container &));
-
 
     friend ObjectServer startUnlock(ObjectServer &&server, const std::string &address, const int32_t port);
 };

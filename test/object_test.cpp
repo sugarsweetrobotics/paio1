@@ -16,7 +16,30 @@ bool operator==(const TM &m1, const TM &m2)
   return (m1.h == m2.h) && (m1.b == m2.b);
 }
 
-SCENARIO("Object", "[object]")
+
+SCENARIO("Object Basic Test", "[object]")
+{
+  GIVEN("Object can copy") 
+  {
+    const auto obj = paio::Object<TM>({"header", "body"});
+    THEN("can copy") {
+      auto obj2 = obj;
+      REQUIRE(obj2 == obj);
+    }
+  }
+
+  GIVEN("Object can copy") 
+  {
+    auto obj1 = paio::Object<TM>({"header", "body"});
+    auto obj2 = paio::Object<TM>({"header", "body"});
+    THEN("can copy") {
+      auto obj3 = std::move(obj1);
+      REQUIRE(obj2 == obj3);
+    }
+  }
+}
+
+SCENARIO("Object Null", "[object]")
 {
 
   GIVEN("Object Null Object")

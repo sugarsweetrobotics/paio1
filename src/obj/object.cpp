@@ -1,6 +1,6 @@
 #include <paio/obj/object.h>
 #include <paio/obj/object_dictionary.h>
-#include <paio/object_server.h>
+#include <paio/obj/object_server.h>
 
 
 //static paio::ObjectBase nullobj;
