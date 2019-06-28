@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <regex>
 
 namespace paio
 {
@@ -23,8 +24,13 @@ struct Request
   std::string path;
   std::vector<Header> headers;
   std::string body;
-  Request(const std::string &m, const std::string &b) : method(m), body(b) {}
-  Request(std::string &&m, std::string &&b) : method(m), body(b) {}
+  std::smatch matches;
+  void* _privateData;
+  Request(const std::string &m, const std::string &b) : method(m), body(b), _privateData(nullptr) {}
+  Request(std::string &&m, std::string &&b) : method(m), body(b), _privateData(nullptr) {}
+  Request(const std::string &m, const std::string &b, const std::smatch &ms, void* privateData=nullptr) :
+   method(m), body(b), matches(ms), _privateData(privateData) {}
+  Request(std::string &&m, std::string &&b, std::smatch&& ms) : method(m), body(b), matches(ms), _privateData(nullptr) {}
 };
 
 struct Response
@@ -42,7 +48,7 @@ struct Response
 
 //Response get(const std::string& url, const Request& request);
 Response get(std::string &&host, uint16_t port, std::string &&pattern);
-Response put(std::string &&host, uint16_t port, std::string &&pattern, std::string &&body, std::string &&content_type);
+Response put(const std::string &host, uint16_t port, const std::string &pattern, const std::string &body, const std::string &content_type);
 Response get(const std::string &url, const Request &request);
 Response put(const std::string &url, const Request &request);
 Response post(const std::string &url, const Request &request);

@@ -10,13 +10,4 @@
 namespace paio
 {
 
-using Containizer = std::function<paio::ObjectContainer(const paio::json::Container &)>;
-template <typename T>
-Containizer containizer(T (*f)(const paio::json::Container &))
-{
-    return [f](const paio::json::Container &jc) {
-        return ObjectContainer(f(jc));
-    };
-}
-
 }; // namespace paio

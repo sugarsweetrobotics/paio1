@@ -15,13 +15,13 @@ public:
 
   virtual ~Object() {}
 
-  Object(std::shared_ptr<T> privateData) : ObjectBase<std::shared_ptr<T>>(privateData) {}
+  explicit Object(std::shared_ptr<T> privateData) : ObjectBase<std::shared_ptr<T>>(privateData) {}
 
-  Object(const T &privateData) : Object<T>(std::make_shared<T>(privateData)) {}
+  explicit Object(const T &privateData) : Object<T>(std::make_shared<T>(privateData)) {}
 
-  Object(T &&privateData) : Object<T>(std::make_shared<T>(std::forward<T>(privateData))) {}
+  explicit Object(T &&privateData) : Object<T>(std::make_shared<T>(std::forward<T>(privateData))) {}
 
-  Object(T* privateData) : Object<T>(std::shared_ptr<T>(privateData)) {}
+  explicit Object(T* privateData) : Object<T>(std::shared_ptr<T>(privateData)) {}
 
   Object(const Object &object) : Object<T>(object.get()) {}
 

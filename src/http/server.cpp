@@ -9,7 +9,13 @@ using namespace paio;
 
 http::Request convert(const httplib::Request &req)
 {
-  return http::Request(req.method, req.body);
+  return http::Request(req.method, req.body, req.matches);
+}
+
+
+http::Request convert(const httplib::Request &req, paio::http::Server& server)
+{
+  return http::Request(req.method, req.body, req.matches, static_cast<void*>(&server));
 }
 
 void apply(httplib::Response &response, http::Response &&r)
@@ -73,8 +79,8 @@ std::function<http::Server_ptr(http::Server_ptr &&)> http::serve(const std::stri
 
     if (method == "GET")
     {
-      std::dynamic_pointer_cast<ServerImpl>(server)->svr->Get(endpoint.c_str(), [=](const httplib::Request &req, httplib::Response &res) {
-        apply(res, cb(convert(req)));
+      std::dynamic_pointer_cast<ServerImpl>(server)->svr->Get(endpoint.c_str(), [&server=*server, cb=cb](const httplib::Request &req, httplib::Response &res) {
+        apply(res, cb(convert(req, server)));
       });
     }
     else if (method == "PUT")

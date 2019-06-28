@@ -12,21 +12,19 @@ class NullObjectIsBindedError : public std::exception {};
 template <typename T>
 class ObjectBase
 {
+public:
+  using MemberType = T;
+  using ActionType = std::function<T(T &&)>;
 protected:
   T _privateData;
-
+  
 public:
   static ObjectBase<T> nullobj;
 
 public:
-  virtual ~ObjectBase()
-  {
-  }
+  virtual ~ObjectBase() {}
 
-  ObjectBase(const ObjectBase &object) : ObjectBase()
-  {
-    *this = object;
-  }
+  ObjectBase(const ObjectBase &object) : _privateData(object._privateData) {}
 
   ObjectBase &operator=(const ObjectBase &obj)
   {
@@ -34,14 +32,9 @@ public:
     return *this;
   }
 
-  ObjectBase(const T& privateData) : _privateData(privateData)
-  {
-  }
+  explicit ObjectBase(const T& privateData) : _privateData(privateData) {}
 
-  ObjectBase(ObjectBase &&object)
-  {
-    this->_privateData = std::move(object._privateData);
-  }
+  ObjectBase(ObjectBase &&object) : _privateData(std::move(object._privateData)) {}
 
   ObjectBase &operator=(ObjectBase &&obj)
   {
@@ -63,10 +56,7 @@ public:
   template <typename... P>
   ObjectBase<T> &does(std::function<T(T &&)> f, P... rem)
   {
-    if (_privateData)
-    {
-      *_privateData = std::forward<T>(f(std::move(*_get())));
-    }
+    _privateData = std::forward<T>(f(std::move(_get())));
     return does(rem...);
   }
 

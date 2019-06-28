@@ -13,8 +13,9 @@ struct Server
   std::string address;
   int32_t port;
   bool failed;
+  void* _privateData;
 
-  Server() : failed(false) {}
+  Server() : failed(false), _privateData(nullptr) {}
   Server(std::string &&addr, const int32_t p) : address(addr), port(p), failed(false) {}
   Server(const std::string &addr, const int32_t p) : address(addr), port(p), failed(false) {}
   Server(Server &&s) : address(s.address), port(s.port), failed(false) {}
@@ -26,9 +27,10 @@ using Server_ptr = std::shared_ptr<http::Server>;
 Server_ptr server(std::string &&address, const int32_t port);
 Server_ptr server(const std::string &address, const int32_t port);
 
-typedef std::function<Response(Request &&)> Callback;
+typedef std::function<Response(Request&&)> Callback;
 
 std::function<Server_ptr(Server_ptr &&)> serve(const std::string &endpoint, const std::string &method, Callback cb);
+
 inline Server_ptr serve(const std::string &endpoint, const std::string &method, Callback cb, Server_ptr &&server)
 {
   return serve(endpoint, method, cb)(std::move(server));

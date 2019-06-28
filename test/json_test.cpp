@@ -37,6 +37,14 @@ SCENARIO("JSON test", "[json]")
                         REQUIRE(std::find(ks.begin(), ks.end(), "string") != ks.end());
                   }
 
+                  THEN("Can Move") {
+
+                        auto b = std::move(j);
+
+                        REQUIRE(json::string(json::get(b, "string")) == "foo");
+                        REQUIRE(json::uint32(json::get(b, "number")) == 123);
+                  }
+
                   THEN("Simple Data")
                   {
                         REQUIRE(json::string(json::get(j, "string")) == "foo");
@@ -109,16 +117,5 @@ SCENARIO("JSON test", "[json]")
                   }
             }
 
-            /*
-    WHEN("string value added") {
-      auto j = json::document(json::string("string_value", "foo"));
-      THEN("string value check") {
-	REQUIRE(json::equals(json::get(j, "string_value"), "foo"));
-      }
-
-      THEN("stringified") {
-	REQUIRE(json::stringify(j) == "{\"string_value\":\"foo\"}");
-      }
-      } */
       }
 }

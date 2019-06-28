@@ -29,14 +29,28 @@ target_link_libraries(object_server_test paio_object paio_object_server paio_jso
 add_test(NAME object_server_test COMMAND $<TARGET_FILE:object_server_test>) 
 endif (BUILD_OBJSERV_TEST)
 
+if (BUILD_OBJBROKER_TEST)
+add_executable(object_broker_test object_broker_test.cpp)
+target_link_libraries(object_broker_test paio_object paio_object_server paio_json paio_http Catch2::Catch2)
+add_test(NAME object_broker_test COMMAND $<TARGET_FILE:object_broker_test>) 
+endif (BUILD_OBJBROKER_TEST)
+
 if (BUILD_JSON_TEST)
 add_executable(json_test json_test.cpp)
 target_link_libraries(json_test paio_json Catch2::Catch2)
 add_test(NAME json_test COMMAND $<TARGET_FILE:json_test>) 
 endif (BUILD_JSON_TEST)
 
+if (BUILD_PROCESS_TEST)
+add_executable(process_test process_test.cpp)
+target_link_libraries(process_test  Catch2::Catch2)
+add_test(NAME process_test COMMAND $<TARGET_FILE:process_test>) 
+endif (BUILD_PROCESS_TEST)
+
 if (BUILD_BROKER_TEST)
 add_executable(broker_test broker_test.cpp)
 target_link_libraries(broker_test  paio_broker Catch2::Catch2)
 add_test(NAME broker_test COMMAND $<TARGET_FILE:broker_test>) 
 endif (BUILD_BROKER_TEST)
+
+

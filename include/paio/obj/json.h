@@ -39,9 +39,15 @@ struct Container
       Object_ptr _ptr;
 
       Container() : _ptr(nullptr), _d_ptr(nullptr) {}
+
       Container(Object_ptr &&p) : _ptr(p), _d_ptr(nullptr) {}
+
       Container(Document_ptr &&p) : _d_ptr(p), _ptr(nullptr) {}
+
       Container(Container &&c) : _ptr(c._ptr), _d_ptr(c._d_ptr) {}
+
+
+
       Container(const Container &c)
       {
             _copyFrom(c);
@@ -57,6 +63,7 @@ struct Container
             _ptr = c._ptr;
             _d_ptr = c._d_ptr;
       }
+      
       Container operator[](int i)
       {
             if (_ptr)

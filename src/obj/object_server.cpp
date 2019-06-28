@@ -9,32 +9,37 @@ paio::ObjectServer paio::object_server()
     return ObjectServer();
 }
 
-paio::ObjectServer paio::startUnlock(paio::ObjectServer &&server, const std::string &address, const int32_t port)
+static const paio::OnJsonRead forwarder = [](auto&& oc) { return std::move(oc); };
+
+std::function<paio::ObjectServer(paio::ObjectServer &&)> paio::startUnlock(const std::string &address, const int32_t port)
 {
-    auto srv = paio::http::server(address, port);
-    std::function<void(const std::string &, paio::ObjectContainer &)> f = [&srv, js = server.js, cs = server.cs, od = server.od](const std::string &topic,
-                                                                                                                                 paio::ObjectContainer &container) {
-        auto serv = http::serve(topic, "GET", [&container, js, cs, od](http::Request &&r) {
-            if (js->count(container.typeName) != 0)
-            {
-                return http::Response(200, json::stringify((*js)[container.typeName](container)));
-            }
-            return http::Response(202, container.typeName);
-        },
-                                std::move(srv));
-        serv = http::serve(topic, "PUT", [&container, &topic, js, cs, od](http::Request &&r) {
-            if (cs->count(container.typeName) != 0)
-            {
-                paio::Containizer c = (*cs)[container.typeName];
-                auto cc = paio::json::parse(r.body);
-                paio::put(od, topic, c(cc));
-                return http::Response(200);
-            }
-            return http::Response(202, container.typeName);
-        },
-                           std::move(serv));
+    return [address, port](paio::ObjectServer &&server) {
+        server.does(
+            [address, port](auto _) { return paio::http::server(address, port); },
+            http::serve(R"(/topic/(\w+))", "GET", [od=server.od, js=server.jsonizers, ojr=server.onJsonReads](http::Request &&r) {
+                const auto topicName = r.matches[1].str();
+                return paio::getContainer<http::Response>(od, topicName, [js, topicName, ojr](const paio::ObjectContainer &oc) {
+                    if (paio::isNull(oc)) return http::Response(202);
+                    auto jer = js->get(oc.typeName);
+                    if (!jer) return http::Response(202); 
+                    paio::OnJsonRead onJsonRead = paio::getWithDefault(ojr, topicName, forwarder);
+                    return http::Response(200, json::stringify(onJsonRead(jer.value()(oc))));                    
+                });
+            }),
+            http::serve(R"(/topic/(\w+))", "PUT", [od=server.od, cs=server.containizers, ojw=server.onJsonWrites](http::Request &&r) {
+                auto topicName = r.matches[1].str();
+                return paio::getContainer<http::Response>(od, topicName, [r, od, cs, topicName, ojw](const paio::ObjectContainer &oc) {
+                    if (paio::isNull(oc)) return http::Response(202);
+                    auto cer = cs->get(oc.typeName);
+                    if (!cer) return http::Response(202);
+                    paio::OnJsonWrite cb = paio::getWithDefault(ojw, topicName, forwarder);
+                    std::cout << "moving....:"  << r.body << std::endl;
+                    paio::put(od, topicName, cer.value()(cb(paio::json::parse(r.body))));
+                    return http::Response(200);
+                });
+            })
+        );
+
+        return (server >>= http::listen(1.0));
     };
-    paio::forEach(server.od, f);
-    server.srv = http::listen(1.0, std::move(srv));
-    return std::move(server);
 }

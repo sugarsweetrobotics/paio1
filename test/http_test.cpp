@@ -1,47 +1,71 @@
-#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#define CATCH_CONFIG_MAIN // This tells Catch to provide a main() - only do this in one cpp file
 #include <catch.hpp>
 #include <paio/functional.h>
 #include <paio/http/client.h>
 #include <paio/http/server.h>
 using namespace paio;
 
-SCENARIO( "HTTP Service", "[http]" ) {
-  GIVEN("Without Service") {
-    REQUIRE( http::get("localhost", 9955, "/").status == 0);
+SCENARIO("HTTP Service", "[http]")
+{
+  GIVEN("Without Service")
+  {
+    REQUIRE(http::get("localhost", 9955, "/").status == 0);
   }
-  
-  GIVEN("With Server") {
+
+  GIVEN("With Server")
+  {
     int port = 9559;
     auto s = http::server("localhost", port);
-    s = http::serve("/", "GET", [&](http::Request&& r) {
-	return http::Response(200, "Hello");
-      }, std::move(s));
-    
+    s = http::serve("/", "GET", [&](http::Request &&r) {
+      return http::Response(200, "Hello");
+    },
+                    std::move(s));
+
     s = http::listen(1.0, std::move(s));
-    
-    THEN("Can access to server") {
+
+    THEN("Can access to server")
+    {
       auto r = http::get("localhost", port, "/");
       REQUIRE(r.status == 200);
       REQUIRE(r.body == "Hello");
     }
   }
-  
-  GIVEN("With Server (functional style)") {
+
+  GIVEN("With Server (functional style)")
+  {
     int port = 9557;
     auto t = paio::compose<http::Server_ptr>(http::listen(1.0),
-					     http::serve("/", "GET", [&](http::Request&& r) {
-						 return http::Response(200, "Hello");
-					       }));
+                                             http::serve("/", "GET", [&](http::Request &&r) {
+                                               return http::Response(200, "Hello");
+                                             }));
     auto s = t(http::server("localhost", port));
-			   
-    THEN("Can access to server") {
+
+    THEN("Can access to server")
+    {
       auto r = http::get("localhost", port, "/");
       REQUIRE(r.status == 200);
       REQUIRE(r.body == "Hello");
     }
   }
-  
-  
+
+  GIVEN("With Repl")
+  {
+    int port = 9557;
+    auto t = paio::compose<http::Server_ptr>(http::listen(1.0),
+                                             http::serve(R"(/topic/(\w+))",
+                                                         "GET", [&](http::Request &&r) {
+                                                           return http::Response(200, std::string("Hello:") + r.matches[1].str());
+                                                         }));
+    auto s = t(http::server("localhost", port));
+
+    THEN("Can access to server")
+    {
+      auto r = http::get("localhost", port, "/topic/hoge");
+      REQUIRE(r.status == 200);
+      REQUIRE(r.body == "Hello:hoge");
+    }
+  }
+
   /*
     GIVEN("With Server") {
     WHEN("Server gives hello") {
@@ -79,8 +103,8 @@ SCENARIO( "HTTP Service", "[http]" ) {
 	REQUIRE(r.body == "Hello World");
       }
       }*/
-    
-    /*
+
+  /*
     WHEN("Server binds Dynamic Port") {
       int port = 0;
       auto s = http::server("localhost", port);
@@ -100,7 +124,4 @@ SCENARIO( "HTTP Service", "[http]" ) {
       }*/
 
   //  }
-
 }
-
-
