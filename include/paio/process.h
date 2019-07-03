@@ -1,23 +1,56 @@
 #pragma once
 
 #include <list>
+#include <tuple>
+#include "paio/obj/mangling.h"
 #include "paio/obj/object.h"
 #include "paio/obj/object_dictionary.h"
 
 namespace paio
 {
 
+    class IProcessFunction {
+    public:
+        ~IProcessFunction() {}
+
+    public:
+        virtual IProcessFunction* bindAny(std::shared_ptr<void>& arg) = 0;
+        
+        virtual std::optional<std::shared_ptr<void>> callAny(std::shared_ptr<void> arg) = 0;
+    };
+
     template<typename T, typename U, typename...R>
     class ProcessFunction;
 
-    template<typename T, typename U, typename...R>
-    ProcessFunction<T, U, R...>* processFunction(std::function<T(U, R...)> fp) {
-        return new ProcessFunction<T, U, R...>(fp);
+    template<typename T>
+    inline auto processFunction(std::function<T()> fp) {
+        return nullptr;
     }
 
     template<typename T, typename U, typename...R>
-    class ProcessFunction {
+    inline ProcessFunction<T, U, R...>* processFunction(std::function<T(U, R...)> fp) {
+        if (fp) {
+            return new ProcessFunction<T, U, R...>(fp);
+        }
+        return nullptr;
+    }
+
+    template<typename T, typename U, typename S, typename...R>
+    std::optional<T> call(ProcessFunction<T, U, S, R...>* pf, U arg) {
+        return std::nullopt;
+    }
+
+    template<typename T, typename U>
+    std::optional<T> call(ProcessFunction<T, U>* pf, U& arg) {
+        return pf->f(arg);
+    }
+
+    template<typename T, typename U, typename...R>
+    class ProcessFunction : public IProcessFunction {
     public:
+        using ReturnType = T;
+        using ArgumentType = U;
+
         std::function<T(U, R...)> f;
 
         //ProcessFunction(std::function<T(R...)> fp) : f(fp) {}
@@ -28,20 +61,45 @@ namespace paio
         ProcessFunction(P fp) : f(fp) {}
 
     public:
-        std::vector<std::string> typeName() {
-            return std::vector<std::string>({typeid(U).name(), typeid(R).name()...});
+        auto typeName() {
+            return std::make_tuple(demangle_name(typeid(U).name()), demangle_name(typeid(R).name())...);
         }
 
-        auto bindType(U arg) {
-            return processFunction(this->bind(arg));
-        }
-
-        std::function<T(R...)> bind(U arg) {
+        std::function<T(R...)> bindFunction(U arg) {
+            if (sizeof...(R) == 0) {
+                return nullptr;
+            }
             return std::function<T(R...)>([*this, arg](auto... args) {
                 return this->f(arg, args...);
             });
         }
+
+        virtual IProcessFunction* bindAny(std::shared_ptr<void>& arg) {
+            return static_cast<IProcessFunction*>(bind(*(std::static_pointer_cast<std::decay_t<U>>(arg))));
+        }
+        
+        auto bind(U arg) {
+            return processFunction<T, R...>(this->bindFunction(arg));
+        }
+
+        std::optional<T> call(U arg) {
+            return paio::call<T, U, R...>(this, arg);
+        }
+
+        std::optional<std::shared_ptr<void>> callAny(std::shared_ptr<void> arg) {
+            auto pt = std::static_pointer_cast<std::decay_t<U>>(arg);
+            auto t = paio::call<T, U, R...>(this, *pt);
+            if (!t) {
+                return std::nullopt;
+            }
+            auto retval = std::shared_ptr<std::decay_t<T>>(new T(t.value()));
+            return std::static_pointer_cast<void>(retval);
+        }
+
+
     };
+
+
 #if 0
 template<typename T, typename U, typename W>
 class ProcessFunction {
