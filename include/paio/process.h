@@ -1,6 +1,9 @@
 #pragma once
 
 #include <list>
+
+#include <utility>
+#include <type_traits>
 #include <tuple>
 #include "paio/obj/mangling.h"
 #include "paio/obj/object.h"
@@ -8,6 +11,23 @@
 
 namespace paio
 {
+
+
+    //! Tests if T is a specialization of Template
+    template <typename T, template <typename...> class Template>
+    struct is_specialization_of : std::false_type {};
+    template <template <typename...> class Template, typename... Args>
+    struct is_specialization_of<Template<Args...>, Template> : std::true_type {};
+
+
+    template < typename T >
+struct is_tuple : std::false_type{};
+
+template < typename ...Types >
+struct is_tuple<std::tuple<Types...>> : std::true_type {};
+
+template < typename T >
+constexpr bool is_tuple_v = is_tuple<T>::value;
 
     class IProcessFunction {
     public:
@@ -45,6 +65,11 @@ namespace paio
         return pf->f(arg);
     }
 
+    template<typename U, typename... R, typename... S>
+    std::vector<std::string> tuple_type_names(std::function<std::tuple<R...>(U, S...)> fp = nullptr) {
+        return {demangle_name(typeid(R).name())...};
+    }
+
     template<typename T, typename U, typename...R>
     class ProcessFunction : public IProcessFunction {
     public:
@@ -61,9 +86,19 @@ namespace paio
         ProcessFunction(P fp) : f(fp) {}
 
     public:
-        auto typeName() {
-            return std::make_tuple(demangle_name(typeid(U).name()), demangle_name(typeid(R).name())...);
+        std::vector<std::string> argumentTypeNames() {
+            return {demangle_name(typeid(U).name()), demangle_name(typeid(R).name())...};
         }
+   
+   
+        std::vector<std::string>
+        returnTypeNames() {
+            if constexpr (is_tuple<T>::value) {
+                return  tuple_type_names(f);
+            }
+            return {demangle_name(typeid(T).name())};
+        }
+
 
         std::function<T(R...)> bindFunction(U arg) {
             if (sizeof...(R) == 0) {
