@@ -2,7 +2,7 @@
 #include <catch.hpp>
 
 #include <sstream>
-#include <paio/process.h>
+#include <paio/proc/process.h>
 
 struct MSG {
   std::string body;
