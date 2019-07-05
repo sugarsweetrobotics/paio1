@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <paio/obj/object.h>
+#include <paio/obj/object_container.h>
 
 namespace paio
 {
@@ -14,55 +15,6 @@ inline U getWithDefault(const std::shared_ptr<std::map<T, U>> &map, const T &key
         return map->at(key);
     return defaultValue;
 }
-
-class ObjectContainer : public ObjectBase<std::shared_ptr<void>>
-{
-public:
-  std::string typeName;
-  
-  ObjectContainer() : ObjectBase<std::shared_ptr<void>>(nullptr), typeName("void"){}
-
-  ObjectContainer(const std::shared_ptr<void>&& v, const std::string&& typeName): ObjectBase<std::shared_ptr<void>>(std::move(v)), typeName(std::move(typeName))  {}
-
-  ObjectContainer(ObjectContainer&& oc): ObjectContainer(std::move(oc._privateData), std::move(oc.typeName)) {}
-
-  ObjectContainer& operator=(ObjectContainer&& oc) {
-    this->_privateData = std::move(oc._privateData);
-    this->typeName = std::move(oc.typeName);
-    return *this;
-  }
-
-  template <typename T>
-  ObjectContainer(const std::shared_ptr<T> data) : ObjectBase<std::shared_ptr<void>>(std::static_pointer_cast<void>(data)), typeName(typeid(T).name()) {}
-
-  template <typename T>
-  ObjectContainer(const T &data) : ObjectContainer(std::make_shared<T>(data)) {}
-
-public:
-  template <typename T, typename W>
-  std::optional<W> bind(std::function<W(const T &)> f)
-  {
-    if (!this->_privateData)
-    {
-      return std::nullopt;
-    }
-    return f(*(std::static_pointer_cast<const T>(this->get())));
-  }
-};
-
-inline bool isNull(const ObjectContainer& oc) {
-  return !(oc.get());
-}
-
-template <typename T>
-T get(const ObjectContainer &oc)
-{
-  return *(std::static_pointer_cast<const T>(oc.get()));
-}
-
-using OnPutObjectContainer = std::function<paio::ObjectContainer(paio::ObjectContainer&&)>;
-using OnPutObjectContainerMap = std::map<std::string, OnPutObjectContainer>;
-using OnPutObjectContainerMap_ptr = std::shared_ptr<OnPutObjectContainerMap>;
 
 class ObjectDictionary;
 using ObjectDictionary_ptr = std::shared_ptr<ObjectDictionary>;

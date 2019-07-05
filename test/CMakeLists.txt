@@ -45,6 +45,10 @@ if (BUILD_PROCESS_TEST)
 add_executable(process_test process_test.cpp)
 target_link_libraries(process_test  Catch2::Catch2)
 add_test(NAME process_test COMMAND $<TARGET_FILE:process_test>) 
+
+add_executable(process_function_test process_function_test.cpp)
+target_link_libraries(process_function_test  Catch2::Catch2)
+add_test(NAME process_function_test COMMAND $<TARGET_FILE:process_function_test>) 
 endif (BUILD_PROCESS_TEST)
 
 if (BUILD_BROKER_TEST)

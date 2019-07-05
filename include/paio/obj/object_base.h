@@ -28,7 +28,7 @@ public:
 
   ObjectBase &operator=(const ObjectBase &obj)
   {
-    _privateData = (obj._privateData);
+    _privateData = obj._privateData;
     return *this;
   }
 
@@ -38,7 +38,7 @@ public:
 
   ObjectBase &operator=(ObjectBase &&obj)
   {
-    this->_privateData = std::move(obj._privateData);
+    this->_privateData = std::forward<T>(obj._privateData);
     return *this;
   }
 
