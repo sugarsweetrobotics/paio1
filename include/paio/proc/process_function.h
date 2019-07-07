@@ -45,9 +45,15 @@ inline ProcessFunction<T, U, R...>* processFunction(std::function<T(U, R...)> fp
 }
 
 template <typename T, typename U, typename S, typename... R>
-std::optional<T> call(ProcessFunction<T, U, S, R...> *pf, U arg)
+std::optional<T> call(ProcessFunction<T, U, S, R...> *pf, U arg1)
 {
     return std::nullopt;
+}
+
+template <typename T, typename U, typename S, typename... R>
+std::optional<T> call(ProcessFunction<T, U, S, R...> *pf, U arg1, S arg2, R... args)
+{
+    return call<T, S, R...>(pf->bind(arg1), arg2, args...);
 }
 
 template <typename T, typename U>
@@ -105,7 +111,7 @@ public:
 
     virtual IProcessFunction* bindAny(std::shared_ptr<void> &arg)
     {
-        return static_cast<IProcessFunction *>(bind(*(std::static_pointer_cast<std::decay_t<U>>(arg))));
+        return static_cast<IProcessFunction*>(bind(*(std::static_pointer_cast<std::decay_t<U>>(arg))));
     }
 
     auto bind(U arg)

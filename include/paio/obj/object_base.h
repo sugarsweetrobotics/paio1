@@ -13,7 +13,7 @@ template <typename T>
 class ObjectBase
 {
 public:
-  using MemberType = T;
+  using MemberType = typename std::remove_reference<T>::type;
   using ActionType = std::function<T(T &&)>;
 protected:
   T _privateData;

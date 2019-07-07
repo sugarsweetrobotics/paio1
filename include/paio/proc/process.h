@@ -27,5 +27,8 @@ Process process(const std::string& name, T(*f)(R...)) {
     return Process(name, paio::processFunction(fp));
 }
 
-
+template<typename T, typename...R>
+inline std::optional<T> call(const Process& p, R... args) {
+   return paio::call<T, R...>(std::dynamic_pointer_cast<ProcessFunction<T, R...>>(p.fp).get(), args...);
+}
 } // namespace paio
