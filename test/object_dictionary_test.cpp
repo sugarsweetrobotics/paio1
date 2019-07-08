@@ -29,6 +29,7 @@ SCENARIO( "Object", "[object]" ) {
 
     REQUIRE(( obj >>= +[](const TM& tm) { return tm.h == "header"; }));
     REQUIRE(( obj >>= +[](const TM& tm) { return tm.b == "body"; }));
+    
     THEN("Object Dictionary insertion") {
       paio::put(od, "/topic01", obj);
     }

@@ -6,7 +6,7 @@
 #include <paio/obj/object_dictionary.h>
 #include <paio/obj/json.h>
 #include <paio/http/server.h>
-
+#include "paio/obj/mangling.h"
 #include <paio/obj/object_jsonizer.h>
 //#include <paio/obj/object_containizer.h>
 
@@ -168,8 +168,8 @@ template <typename T>
 std::function<paio::ObjectServer(paio::ObjectServer &&)> registerObject(const std::string &topic, const T &obj, const Jsonizer &jsonizer, const Containizer &containizer)
 {
     return [&topic, obj, jsonizer, containizer](ObjectServer &&os) {
-        os.jsonizers->put(typeid(T).name(), jsonizer);
-        os.containizers->put(typeid(T).name(), containizer);
+        os.jsonizers->put(paio::demangle_name(typeid(T).name()), jsonizer);
+        os.containizers->put(paio::demangle_name(typeid(T).name()), containizer);
         paio::put(os.od, topic, std::move(obj));
         return os;
     };

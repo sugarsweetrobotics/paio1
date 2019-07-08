@@ -62,6 +62,11 @@ SCENARIO("Process Basic Test", "[process_function]")
       REQUIRE(processFunction03 == nullptr);
     }
 
+    THEN("Can call with all argument") {
+      auto return_value = paio::call<std::string, unsigned int, const std::string&>(processFunction01, 3, "hoo");
+      REQUIRE(return_value.value() == "Number is 3, String is hoo");
+    }
+
     THEN("Can not bind all argument. Last argument must be passed with call function") {
       auto processFunction02 = processFunction01->bind(3);
       auto return_value = paio::call<std::string, const std::string&>(processFunction02, std::string("hoo"));

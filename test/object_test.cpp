@@ -15,7 +15,16 @@ bool operator==(const TM &m1, const TM &m2)
 {
   return (m1.h == m2.h) && (m1.b == m2.b);
 }
+SCENARIO("Object for Basic Types", "[object basic]") {
 
+  GIVEN("Object for str") {
+    const auto obj = paio::Object<std::string>("hello");
+    THEN("can copy") {
+      auto obj2 = obj;
+      REQUIRE(obj == obj2);
+    }
+  }
+}
 
 SCENARIO("Object Basic Test", "[object]")
 {
