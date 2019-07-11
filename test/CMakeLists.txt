@@ -49,6 +49,11 @@ add_test(NAME process_test COMMAND $<TARGET_FILE:process_test>)
 add_executable(process_function_test process_function_test.cpp)
 target_link_libraries(process_function_test  Catch2::Catch2)
 add_test(NAME process_function_test COMMAND $<TARGET_FILE:process_function_test>) 
+
+
+add_executable(process_dictionary_test process_dictionary_test.cpp)
+target_link_libraries(process_dictionary_test  Catch2::Catch2)
+add_test(NAME process_dictionary_test COMMAND $<TARGET_FILE:process_dictionary_test>) 
 endif (BUILD_PROCESS_TEST)
 
 if (BUILD_BROKER_TEST)
