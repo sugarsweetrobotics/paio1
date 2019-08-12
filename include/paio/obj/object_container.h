@@ -41,6 +41,11 @@ public:
   }
 };
 
+template<typename T>
+inline ObjectContainer object_container(T&& t) {
+    return ObjectContainer(std::make_shared<T>(t));
+}
+
 inline bool isNull(const ObjectContainer &oc)
 {
   return !(oc.get());
@@ -51,9 +56,5 @@ T get(const ObjectContainer &oc)
 {
   return *(std::static_pointer_cast<const T>(oc.get()));
 }
-
-using OnPutObjectContainer = std::function<paio::ObjectContainer(paio::ObjectContainer &&)>;
-using OnPutObjectContainerMap = std::map<std::string, OnPutObjectContainer>;
-using OnPutObjectContainerMap_ptr = std::shared_ptr<OnPutObjectContainerMap>;
 
 }; // namespace paio

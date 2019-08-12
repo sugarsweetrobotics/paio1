@@ -1,52 +1,69 @@
 #pragma once
+
 #include <iostream>
 #include <map>
 #include <string>
 #include <paio/obj/object.h>
 #include <paio/obj/object_container.h>
+#include "paio/proc/process.h"
+
 
 namespace paio
 {
 
-template <typename T, typename U>
-inline U getWithDefault(const std::shared_ptr<std::map<T, U>> &map, const T &key, const U &defaultValue)
-{
-    if (map->count(key) != 0)
-        return map->at(key);
-    return defaultValue;
-}
+using OnPutProcess = std::function<paio::Process(paio::Process&&)>;
+using OnPutProcessMap = std::map<std::string, OnPutProcess>;
+using OnPutProcessMap_ptr = std::shared_ptr<OnPutProcessMap>;
 
-class ObjectDictionary;
-using ObjectDictionary_ptr = std::shared_ptr<ObjectDictionary>;
 
-struct ObjectDictionary
+class ProcessDictionary;
+using ProcessDictionary_ptr = std::shared_ptr<ProcessDictionary>;
+
+struct ProcessDictionary
 {
 private:
-  OnPutObjectContainerMap_ptr onPutObjectContainers;
+  OnPutProcessMap_ptr onPutProcesses;
 public:
-  std::map<std::string, ObjectContainer> map;
+  std::map<std::string, Process> map;
 
 public:
-  ObjectDictionary(): onPutObjectContainers(std::make_shared<OnPutObjectContainerMap>()), map() {}
+  ProcessDictionary(): onPutProcesses(std::make_shared<OnPutProcessMap>()), map() {}
 
-  friend ObjectDictionary_ptr registerOnPutObjectContainer(ObjectDictionary_ptr dic, const std::string& key, OnPutObjectContainer onPut);
+  //friend Process registerOnPutProcess(Process_ptr dic, const std::string& key, OnPutProcess onPut);
 
-  friend void put(std::shared_ptr<ObjectDictionary> dic, const std::string &key, paio::ObjectContainer &&oc);
-
+  friend void put(ProcessDictionary_ptr dic, const std::string &key, paio::Process &&oc);
+  friend void put(ProcessDictionary_ptr dic, const std::string &key, const paio::Process &oc);
+  friend Process& get(ProcessDictionary_ptr dic, const std::string& key);
 };
 
-ObjectDictionary_ptr object_dictionary();
+ProcessDictionary_ptr process_dictionary() {
+    return std::make_shared<ProcessDictionary>();
+}
 
-template <typename T>
-paio::Object<T> get(ObjectDictionary_ptr dic, const std::string &key)
+void put(ProcessDictionary_ptr dic, const std::string &key, const paio::Process &proc)
+{
+    dic->map[key] = proc;
+}
+
+void put(ProcessDictionary_ptr dic, const std::string &key, paio::Process &&proc)
+{
+    dic->map[key] = std::move(proc);
+}
+
+Process& get(ProcessDictionary_ptr dic, const std::string &key)
 {
   if (dic->map.count(key) == 0)
   {
-    return paio::Object<T>();
+    return paio::Process::Null;
   }
-  return paio::Object<T>(std::static_pointer_cast<T>(dic->map[key].get()));
+  return dic->map[key];
 }
 
+Process paio::Process::Null;
+/*
+
+
+>>>>>>> 555d268b0235859fb3bb8bba6d67ca91471fadab
 template<typename T>
 T getContainer(ObjectDictionary_ptr dic, const std::string& key, std::function<T(const paio::ObjectContainer&)> f) {
   if (dic->map.count(key) == 0)
@@ -55,6 +72,7 @@ T getContainer(ObjectDictionary_ptr dic, const std::string& key, std::function<T
   }
   return f(dic->map[key]);
 }
+<<<<<<< HEAD
 
 template <typename T>
 void put(ObjectDictionary_ptr dic, const std::string &key, paio::Object<T> &&doc)
@@ -62,6 +80,11 @@ void put(ObjectDictionary_ptr dic, const std::string &key, paio::Object<T> &&doc
   put(dic, key, ObjectContainer(doc._get()));
 }
 
+=======
+*/
+
+/*
+>>>>>>> 555d268b0235859fb3bb8bba6d67ca91471fadab
 template <typename T>
 void put(ObjectDictionary_ptr dic, const std::string &key, const paio::Object<T> &doc)
 {
@@ -91,5 +114,9 @@ inline ObjectDictionary_ptr registerOnPutObjectContainer(ObjectDictionary_ptr di
   (*(dic->onPutObjectContainers))[key] = onPut;
   return dic;
 }
+<<<<<<< HEAD
+
+=======
+*/
 
 }; // namespace paio

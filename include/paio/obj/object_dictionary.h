@@ -8,6 +8,12 @@
 namespace paio
 {
 
+
+using OnPutObjectContainer = std::function<paio::ObjectContainer(paio::ObjectContainer&&)>;
+using OnPutObjectContainerMap = std::map<std::string, OnPutObjectContainer>;
+using OnPutObjectContainerMap_ptr = std::shared_ptr<OnPutObjectContainerMap>;
+
+
 template <typename T, typename U>
 inline U getWithDefault(const std::shared_ptr<std::map<T, U>> &map, const T &key, const U &defaultValue)
 {
@@ -32,7 +38,6 @@ public:
   friend ObjectDictionary_ptr registerOnPutObjectContainer(ObjectDictionary_ptr dic, const std::string& key, OnPutObjectContainer onPut);
 
   friend void put(std::shared_ptr<ObjectDictionary> dic, const std::string &key, paio::ObjectContainer &&oc);
-
 };
 
 ObjectDictionary_ptr object_dictionary();

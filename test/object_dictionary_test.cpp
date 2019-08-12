@@ -14,6 +14,12 @@ bool operator==(const TM& m1, const TM& m2) {
   return (m1.h == m2.h) && (m1.b == m2.b);
 }
 
+SCENARIO( "ObjectContainer", "[object container]") {
+  GIVEN("Object Container can copy") {
+    auto oc = paio::object_container<TM>({"header", "body"});
+  }
+}
+
 
 SCENARIO( "Object", "[object]" ) {
 

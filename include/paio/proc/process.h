@@ -7,18 +7,26 @@ namespace paio
 {
 
 class Process {
+
 public:
-    const std::string name;
-    const std::shared_ptr<IProcessFunction> fp;
+    static Process Null;
 public:
-    
+    std::string name;
+    std::shared_ptr<IProcessFunction> fp;
+public:
+    Process(): name("null"), fp(nullptr) {}
     Process(const Process& p) : name(p.name), fp(p.fp) {}
     Process(Process&& p) : name(std::move(p.name)), fp(std::move(p.fp)) {}
     explicit Process(const std::string& n, IProcessFunction* func): name(n), fp(func) {}
     virtual ~Process() {}
 
 public:
-    
+    Process& operator=(const Process& p) {
+        this->name = p.name;
+        this->fp = p.fp;
+        return *this;
+    }
+    friend bool isNull(const paio::Process& proc);
 };
 
 template<typename T, typename... R>
@@ -37,4 +45,11 @@ inline std::optional<T> call(const Process& p, R... args) {
   std::cout << "ret" << std::endl;
   return ret;
 }
+
+
+inline bool isNull(const paio::Process& proc) {
+    return !(proc.fp);
+}
+
 } // namespace paio
+
