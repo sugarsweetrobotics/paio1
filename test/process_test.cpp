@@ -17,8 +17,14 @@ SCENARIO("Process Basic Test", "[process]")
         return std::make_tuple("Name is " + c, "Name was " + c);
       });
 
+    auto proc_call = [](auto x, auto y) {return paio::call<std::tuple<std::string, std::string>, const std::string&>(x, y);};
     THEN("Can call") {
-      auto [a, c] = paio::call<std::tuple<std::string, std::string>, const std::string>(proc, "Hello").value();
+      //      auto [a, c] = paio::call<std::tuple<std::string, std::string>, const std::string&>(proc, "Hello").value();
+      auto [a, c] = proc_call(proc, "Hello").value();
+      REQUIRE(a == "Name is Hello");
+      REQUIRE(c == "Name was Hello");
     }
+
+
   }
 }

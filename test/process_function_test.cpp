@@ -14,7 +14,7 @@ const std::string string_name = paio::demangle_name(typeid(std::string).name());
 SCENARIO("Process Basic Test", "[process_function]")
 {
 
-  GIVEN("Two arg function Process") {
+  GIVEN("One arg function Process") {
     auto functionPointer = std::function<std::tuple<std::string, std::string>(const std::string&)>(
       [](const std::string& c) {
         return std::make_tuple("Name is " + c, "Name was " + c);
@@ -30,6 +30,14 @@ SCENARIO("Process Basic Test", "[process_function]")
       auto typeNames = processFunction01->returnTypeNames();
       REQUIRE(typeNames[0] == string_name);
       REQUIRE(typeNames[1] == string_name);
+    }
+
+    THEN("CAN COPY Process Function") {
+      auto copiedFunc = processFunction01;
+
+      auto [a, b] = copiedFunc->call("Hello").value();
+      REQUIRE(a == "Name is Hello");
+      REQUIRE(b == "Name was Hello");
     }
   }
 

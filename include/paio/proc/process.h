@@ -23,12 +23,18 @@ public:
 
 template<typename T, typename... R>
 Process process(const std::string& name, T(*f)(R...)) {
+  std::cout << "Constructing Process...." << std::endl;
     std::function<T(R...)> fp = f;
     return Process(name, paio::processFunction(fp));
 }
 
 template<typename T, typename...R>
 inline std::optional<T> call(const Process& p, R... args) {
-   return paio::call<T, R...>(std::dynamic_pointer_cast<ProcessFunction<T, R...>>(p.fp).get(), args...);
+  std::cout << "Calling Proces.." << std::endl;
+  auto fp = std::dynamic_pointer_cast<ProcessFunction<T, R...>>(p.fp).get();
+  std::cout << "fp olay" << std::endl;
+  auto ret =  paio::call<T, R...>(fp, args...);
+  std::cout << "ret" << std::endl;
+  return ret;
 }
 } // namespace paio

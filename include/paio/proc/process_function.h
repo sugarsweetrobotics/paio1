@@ -53,12 +53,17 @@ std::optional<T> call(ProcessFunction<T, U, S, R...> *pf, U arg1)
 template <typename T, typename U, typename S, typename... R>
 std::optional<T> call(ProcessFunction<T, U, S, R...> *pf, U arg1, S arg2, R... args)
 {
+  std::cout << "calling..." << std::endl;
     return call<T, S, R...>(pf->bind(arg1), arg2, args...);
 }
 
 template <typename T, typename U>
 std::optional<T> call(ProcessFunction<T, U> *pf, U &arg)
 {
+  std::cout << "process_function/ paio::call<T,U> calling fp" << std::endl;
+  if (pf == nullptr) { 
+    std::cout << "nullptr" << std::endl;
+  }
     return pf->f(arg);
 }
 
